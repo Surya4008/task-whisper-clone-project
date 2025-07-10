@@ -39,6 +39,16 @@ All colors MUST be HSL.
     --task-hover: 210 17% 98%;
     --task-completed: 202 11% 60%;
     --sidebar-active: 210 79% 95%;
+    
+    --priority-high: 0 72% 51%;
+    --priority-medium: 38 92% 50%;
+    --priority-low: 142 76% 36%;
+    --priority-none: 210 11% 71%;
+    
+    --category-work: 210 79% 46%;
+    --category-personal: 142 76% 36%;
+    --category-shopping: 38 92% 50%;
+    --category-other: 271 81% 56%;
 
     --radius: 0.5rem;
 
@@ -105,5 +115,52 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* Custom animations and transitions */
+@layer components {
+  .task-item {
+    @apply transition-all duration-200 ease-in-out;
+  }
+  
+  .task-item:hover {
+    @apply transform scale-[1.01] shadow-sm;
+  }
+  
+  .priority-indicator {
+    @apply w-1 h-8 rounded-full transition-colors duration-200;
+  }
+  
+  .category-badge {
+    @apply inline-flex items-center px-2 py-1 rounded-full text-xs font-medium transition-all duration-200;
+  }
+  
+  .slide-in {
+    animation: slideIn 0.3s ease-out;
+  }
+  
+  .fade-in {
+    animation: fadeIn 0.2s ease-out;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }

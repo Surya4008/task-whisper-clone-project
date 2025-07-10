@@ -8,8 +8,19 @@ import {
   Calendar,
   Star,
   Menu,
-  X
+  X,
+  Flag,
+  Briefcase,
+  User,
+  ShoppingCart,
+  Circle,
+  Filter
 } from "lucide-react";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
 
 interface TaskList {
@@ -22,14 +33,47 @@ interface TaskList {
 interface SidebarProps {
   isOpen: boolean;
   onToggle: () => void;
+  onFilterChange?: (filter: FilterOptions) => void;
 }
 
-export const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
+interface FilterOptions {
+  priority?: "none" | "low" | "medium" | "high";
+  category?: "work" | "personal" | "shopping" | "other";
+  showCompleted?: boolean;
+}
+
+export const Sidebar = ({ isOpen, onToggle, onFilterChange }: SidebarProps) => {
   const [taskLists] = useState<TaskList[]>([
     { id: "1", name: "My Tasks", taskCount: 0, isDefault: true },
   ]);
   
   const [activeListId, setActiveListId] = useState("1");
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+  const [activeFilter, setActiveFilter] = useState<FilterOptions>({});
+
+  const handleFilterClick = (filter: FilterOptions) => {
+    const newFilter = { ...activeFilter, ...filter };
+    setActiveFilter(newFilter);
+    onFilterChange?.(newFilter);
+  };
+
+  const clearFilters = () => {
+    setActiveFilter({});
+    onFilterChange?.({});
+  };
+
+  const priorityItems = [
+    { id: "high", label: "High Priority", color: "bg-priority-high", icon: Flag },
+    { id: "medium", label: "Medium Priority", color: "bg-priority-medium", icon: Flag },
+    { id: "low", label: "Low Priority", color: "bg-priority-low", icon: Flag },
+  ];
+
+  const categoryItems = [
+    { id: "work", label: "Work", color: "bg-category-work", icon: Briefcase },
+    { id: "personal", label: "Personal", color: "bg-category-personal", icon: User },
+    { id: "shopping", label: "Shopping", color: "bg-category-shopping", icon: ShoppingCart },
+    { id: "other", label: "Other", color: "bg-category-other", icon: Circle },
+  ];
 
   return (
     <>
@@ -98,6 +142,85 @@ export const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
                   <Calendar className="h-4 w-4" />
                   Calendar
                 </Button>
+              </div>
+
+              {/* Filters */}
+              <div className="pt-4 border-t border-border">
+                <Collapsible open={isFiltersOpen} onOpenChange={setIsFiltersOpen}>
+                  <CollapsibleTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-between h-10"
+                    >
+                      <div className="flex items-center gap-3">
+                        <Filter className="h-4 w-4" />
+                        Filters
+                      </div>
+                      {Object.keys(activeFilter).length > 0 && (
+                        <Badge variant="secondary" className="ml-auto">
+                          {Object.keys(activeFilter).length}
+                        </Badge>
+                      )}
+                    </Button>
+                  </CollapsibleTrigger>
+                  
+                  <CollapsibleContent className="space-y-3 mt-2">
+                    {/* Priority Filters */}
+                    <div>
+                      <h4 className="text-sm font-medium text-muted-foreground mb-2">Priority</h4>
+                      <div className="space-y-1">
+                        {priorityItems.map((item) => (
+                          <Button
+                            key={item.id}
+                            variant="ghost"
+                            size="sm"
+                            className={cn(
+                              "w-full justify-start gap-3 h-8",
+                              activeFilter.priority === item.id && "bg-muted"
+                            )}
+                            onClick={() => handleFilterClick({ priority: item.id as any })}
+                          >
+                            <div className={cn("w-3 h-3 rounded-full", item.color)} />
+                            {item.label}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Category Filters */}
+                    <div>
+                      <h4 className="text-sm font-medium text-muted-foreground mb-2">Category</h4>
+                      <div className="space-y-1">
+                        {categoryItems.map((item) => (
+                          <Button
+                            key={item.id}
+                            variant="ghost"
+                            size="sm"
+                            className={cn(
+                              "w-full justify-start gap-3 h-8",
+                              activeFilter.category === item.id && "bg-muted"
+                            )}
+                            onClick={() => handleFilterClick({ category: item.id as any })}
+                          >
+                            <div className={cn("w-3 h-3 rounded-full", item.color)} />
+                            {item.label}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {Object.keys(activeFilter).length > 0 && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full"
+                        onClick={clearFilters}
+                      >
+                        Clear Filters
+                      </Button>
+                    )}
+                  </CollapsibleContent>
+                </Collapsible>
               </div>
 
               <div className="pt-4 border-t border-border">

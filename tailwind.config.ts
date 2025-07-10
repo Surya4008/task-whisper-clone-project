@@ -66,6 +66,18 @@ export default {
 					hover: 'hsl(var(--task-hover))',
 					completed: 'hsl(var(--task-completed))',
 					'sidebar-active': 'hsl(var(--sidebar-active))'
+				},
+				priority: {
+					high: 'hsl(var(--priority-high))',
+					medium: 'hsl(var(--priority-medium))',
+					low: 'hsl(var(--priority-low))',
+					none: 'hsl(var(--priority-none))'
+				},
+				category: {
+					work: 'hsl(var(--category-work))',
+					personal: 'hsl(var(--category-personal))',
+					shopping: 'hsl(var(--category-shopping))',
+					other: 'hsl(var(--category-other))'
 				}
 			},
 			borderRadius: {
