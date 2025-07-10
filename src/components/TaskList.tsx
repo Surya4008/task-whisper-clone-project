@@ -32,7 +32,8 @@ import {
   Clock,
   Flag,
   GripVertical,
-  AlertCircle
+  AlertCircle,
+  List
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -41,7 +42,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { TaskDetailDialog, TaskDetails } from "@/components/TaskDetailDialog";
+import { CalendarView } from "@/components/CalendarView";
+import { QuickTaskDialog } from "@/components/QuickTaskDialog";
 import { cn } from "@/lib/utils";
+
+type ViewType = "list" | "calendar";
+
+interface TaskListProps {
+  view?: ViewType;
+  onViewChange?: (view: ViewType) => void;
+}
 
 interface SortableTaskItemProps {
   task: TaskDetails;
@@ -189,11 +199,13 @@ const SortableTaskItem = ({ task, onToggle, onEdit, onDelete, onOpenDetails }: S
   );
 };
 
-export const TaskList = () => {
+export const TaskList = ({ view = "list", onViewChange }: TaskListProps) => {
   const [tasks, setTasks] = useState<TaskDetails[]>([]);
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [selectedTask, setSelectedTask] = useState<TaskDetails | null>(null);
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
+  const [isQuickTaskDialogOpen, setIsQuickTaskDialogOpen] = useState(false);
+  const [quickTaskDate, setQuickTaskDate] = useState<Date | null>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -272,59 +284,106 @@ export const TaskList = () => {
     return b.createdAt.getTime() - a.createdAt.getTime();
   });
 
+  const handleDateClick = (date: Date) => {
+    setQuickTaskDate(date);
+    setIsQuickTaskDialogOpen(true);
+  };
+
+  const addQuickTask = (task: TaskDetails) => {
+    setTasks([task, ...tasks]);
+  };
+
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
       <div className="p-6 border-b border-border">
-        <h1 className="text-2xl font-medium text-foreground mb-4">My Tasks</h1>
-        
-        {/* Add new task */}
-        <div className="flex gap-2">
-          <Input
-            placeholder="Add a task"
-            value={newTaskTitle}
-            onChange={(e) => setNewTaskTitle(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && addTask()}
-            className="flex-1"
-          />
-          <Button onClick={addTask} size="icon" variant="outline">
-            <Plus className="h-4 w-4" />
-          </Button>
+        <div className="flex items-center justify-between mb-4">
+          <h1 className="text-2xl font-medium text-foreground">
+            {view === "calendar" ? "Calendar" : "My Tasks"}
+          </h1>
+          
+          {/* View Toggle */}
+          <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
+            <Button
+              variant={view === "list" ? "default" : "ghost"}
+              size="sm"
+              onClick={() => onViewChange?.("list")}
+              className="h-8"
+            >
+              <List className="h-4 w-4 mr-1" />
+              List
+            </Button>
+            <Button
+              variant={view === "calendar" ? "default" : "ghost"}
+              size="sm"
+              onClick={() => onViewChange?.("calendar")}
+              className="h-8"
+            >
+              <Calendar className="h-4 w-4 mr-1" />
+              Calendar
+            </Button>
+          </div>
         </div>
+        
+        {/* Add new task - only show in list view */}
+        {view === "list" && (
+          <div className="flex gap-2">
+            <Input
+              placeholder="Add a task"
+              value={newTaskTitle}
+              onChange={(e) => setNewTaskTitle(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && addTask()}
+              className="flex-1"
+            />
+            <Button onClick={addTask} size="icon" variant="outline">
+              <Plus className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
       </div>
 
-      {/* Task list */}
+      {/* Content */}
       <div className="flex-1 overflow-auto">
-        {tasks.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-64 text-muted-foreground">
-            <Plus className="h-12 w-12 mb-4 opacity-50" />
-            <p className="text-lg">A fresh start awaits</p>
-            <p className="text-sm">Add a task to get started</p>
-          </div>
+        {view === "calendar" ? (
+          <CalendarView
+            tasks={tasks}
+            onTaskClick={openTaskDetails}
+            onDateClick={handleDateClick}
+          />
         ) : (
-          <div className="p-4">
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={handleDragEnd}
-            >
-              <SortableContext items={sortedTasks.map(t => t.id)} strategy={verticalListSortingStrategy}>
-                <div className="space-y-2">
-                  {sortedTasks.map((task) => (
-                    <div key={task.id} className="slide-in">
-                      <SortableTaskItem
-                        task={task}
-                        onToggle={toggleTask}
-                        onEdit={updateTask}
-                        onDelete={deleteTask}
-                        onOpenDetails={openTaskDetails}
-                      />
+          <>
+            {tasks.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-64 text-muted-foreground">
+                <Plus className="h-12 w-12 mb-4 opacity-50" />
+                <p className="text-lg">A fresh start awaits</p>
+                <p className="text-sm">Add a task to get started</p>
+              </div>
+            ) : (
+              <div className="p-4">
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleDragEnd}
+                >
+                  <SortableContext items={sortedTasks.map(t => t.id)} strategy={verticalListSortingStrategy}>
+                    <div className="space-y-2">
+                      {sortedTasks.map((task) => (
+                        <div key={task.id} className="slide-in">
+                          <SortableTaskItem
+                            task={task}
+                            onToggle={toggleTask}
+                            onEdit={updateTask}
+                            onDelete={deleteTask}
+                            onOpenDetails={openTaskDetails}
+                          />
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              </SortableContext>
-            </DndContext>
-          </div>
+                  </SortableContext>
+                </DndContext>
+              </div>
+            )}
+          </>
         )}
       </div>
 
@@ -337,6 +396,17 @@ export const TaskList = () => {
           setSelectedTask(null);
         }}
         onSave={updateTask}
+      />
+
+      {/* Quick Task Dialog */}
+      <QuickTaskDialog
+        isOpen={isQuickTaskDialogOpen}
+        selectedDate={quickTaskDate}
+        onClose={() => {
+          setIsQuickTaskDialogOpen(false);
+          setQuickTaskDate(null);
+        }}
+        onSave={addQuickTask}
       />
     </div>
   );

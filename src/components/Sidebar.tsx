@@ -34,6 +34,8 @@ interface SidebarProps {
   isOpen: boolean;
   onToggle: () => void;
   onFilterChange?: (filter: FilterOptions) => void;
+  currentView?: "list" | "calendar";
+  onViewChange?: (view: "list" | "calendar") => void;
 }
 
 interface FilterOptions {
@@ -42,7 +44,7 @@ interface FilterOptions {
   showCompleted?: boolean;
 }
 
-export const Sidebar = ({ isOpen, onToggle, onFilterChange }: SidebarProps) => {
+export const Sidebar = ({ isOpen, onToggle, onFilterChange, currentView, onViewChange }: SidebarProps) => {
   const [taskLists] = useState<TaskList[]>([
     { id: "1", name: "My Tasks", taskCount: 0, isDefault: true },
   ]);
@@ -137,7 +139,11 @@ export const Sidebar = ({ isOpen, onToggle, onFilterChange }: SidebarProps) => {
                 
                 <Button
                   variant="ghost"
-                  className="w-full justify-start gap-3 h-10"
+                  className={cn(
+                    "w-full justify-start gap-3 h-10",
+                    currentView === "calendar" && "bg-task-sidebar-active text-primary"
+                  )}
+                  onClick={() => onViewChange?.("calendar")}
                 >
                   <Calendar className="h-4 w-4" />
                   Calendar
