@@ -160,9 +160,9 @@ export const CalendarView = ({ tasks, onTaskClick, onDateClick }: CalendarViewPr
                         <span className="truncate flex-1">
                           {task.title}
                         </span>
-                        {task.dueTime && (
+                        {task.startTime && (
                           <span className="text-muted-foreground">
-                            {task.dueTime}
+                            {task.startTime}{task.endTime ? ` - ${task.endTime}` : ''}
                           </span>
                         )}
                       </div>

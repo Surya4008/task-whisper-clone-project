@@ -153,10 +153,10 @@ const SortableTaskItem = ({ task, onToggle, onEdit, onDelete, onOpenDetails }: S
                 {isOverdue && <AlertCircle className="h-3 w-3" />}
                 <Calendar className="h-3 w-3" />
                 <span>{format(task.dueDate, "MMM d")}</span>
-                {task.dueTime && (
+                {task.startTime && (
                   <>
                     <Clock className="h-3 w-3 ml-1" />
-                    <span>{task.dueTime}</span>
+                    <span>{task.startTime}{task.endTime ? ` - ${task.endTime}` : ''}</span>
                   </>
                 )}
               </div>

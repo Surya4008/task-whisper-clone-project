@@ -35,7 +35,6 @@ export interface TaskDetails {
   priority: "none" | "low" | "medium" | "high";
   category: "work" | "personal" | "shopping" | "other";
   dueDate?: Date;
-  dueTime?: string;
   startTime?: string;
   endTime?: string;
   createdAt: Date;
@@ -199,59 +198,43 @@ export const TaskDetailDialog = ({ task, isOpen, onClose, onSave }: TaskDetailDi
             </div>
           </div>
 
-          {/* Due Date and Time */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>Due Date</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !editedTask.dueDate && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {editedTask.dueDate ? format(editedTask.dueDate, "PPP") : "Pick a date"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={editedTask.dueDate}
-                    onSelect={(date) => updateField("dueDate", date)}
-                    initialFocus
-                    className="pointer-events-auto"
-                  />
-                  {editedTask.dueDate && (
-                    <div className="p-3 border-t">
-                      <Button
-                        variant="outline"
-                        className="w-full"
-                        onClick={() => updateField("dueDate", undefined)}
-                      >
-                        Clear date
-                      </Button>
-                    </div>
+          {/* Due Date */}
+          <div className="space-y-2">
+            <Label>Due Date</Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-full justify-start text-left font-normal",
+                    !editedTask.dueDate && "text-muted-foreground"
                   )}
-                </PopoverContent>
-              </Popover>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="time">Due Time</Label>
-              <div className="relative">
-                <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  id="time"
-                  type="time"
-                  value={editedTask.dueTime || ""}
-                  onChange={(e) => updateField("dueTime", e.target.value)}
-                  className="pl-10"
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {editedTask.dueDate ? format(editedTask.dueDate, "PPP") : "Pick a date"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={editedTask.dueDate}
+                  onSelect={(date) => updateField("dueDate", date)}
+                  initialFocus
+                  className="pointer-events-auto"
                 />
-              </div>
-            </div>
+                {editedTask.dueDate && (
+                  <div className="p-3 border-t">
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      onClick={() => updateField("dueDate", undefined)}
+                    >
+                      Clear date
+                    </Button>
+                  </div>
+                )}
+              </PopoverContent>
+            </Popover>
           </div>
 
           {/* Time Interval */}

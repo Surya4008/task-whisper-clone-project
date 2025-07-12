@@ -43,7 +43,6 @@ export const QuickTaskDialog = ({ isOpen, selectedDate, onClose, onSave }: Quick
         priority,
         category,
         dueDate: selectedDate,
-        dueTime: dueTime || undefined,
         createdAt: new Date(),
       };
       onSave(newTask);
