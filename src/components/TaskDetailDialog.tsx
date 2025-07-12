@@ -36,6 +36,8 @@ export interface TaskDetails {
   category: "work" | "personal" | "shopping" | "other";
   dueDate?: Date;
   dueTime?: string;
+  startTime?: string;
+  endTime?: string;
   createdAt: Date;
 }
 
@@ -248,6 +250,42 @@ export const TaskDetailDialog = ({ task, isOpen, onClose, onSave }: TaskDetailDi
                   onChange={(e) => updateField("dueTime", e.target.value)}
                   className="pl-10"
                 />
+              </div>
+            </div>
+          </div>
+
+          {/* Time Interval */}
+          <div className="space-y-2">
+            <Label>Time Interval</Label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="startTime">Start Time</Label>
+                <div className="relative">
+                  <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="startTime"
+                    type="time"
+                    value={editedTask.startTime || ""}
+                    onChange={(e) => updateField("startTime", e.target.value)}
+                    className="pl-10"
+                    placeholder="Start time"
+                  />
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="endTime">End Time</Label>
+                <div className="relative">
+                  <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="endTime"
+                    type="time"
+                    value={editedTask.endTime || ""}
+                    onChange={(e) => updateField("endTime", e.target.value)}
+                    className="pl-10"
+                    placeholder="End time"
+                  />
+                </div>
               </div>
             </div>
           </div>

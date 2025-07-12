@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, isSameDay } from "date-fns";
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, isSameDay, addMonths, subMonths, addDays } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { TaskDetails } from "@/components/TaskDetailDialog";
 import { cn } from "@/lib/utils";
+import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 
 interface CalendarViewProps {
   tasks: TaskDetails[];
@@ -14,6 +15,15 @@ interface CalendarViewProps {
 
 export const CalendarView = ({ tasks, onTaskClick, onDateClick }: CalendarViewProps) => {
   const [currentDate, setCurrentDate] = useState(new Date());
+
+  // Keyboard shortcuts
+  useKeyboardShortcuts({
+    onToday: () => setCurrentDate(new Date()),
+    onNextMonth: () => setCurrentDate(prev => addMonths(prev, 1)),
+    onPrevMonth: () => setCurrentDate(prev => subMonths(prev, 1)),
+    onNextDay: () => setCurrentDate(prev => addDays(prev, 1)),
+    onPrevDay: () => setCurrentDate(prev => addDays(prev, -1)),
+  });
 
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
@@ -62,16 +72,26 @@ export const CalendarView = ({ tasks, onTaskClick, onDateClick }: CalendarViewPr
             {format(currentDate, "MMMM yyyy")}
           </h1>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={goToToday}>
+            <Button variant="outline" size="sm" onClick={goToToday} title="Today (T)">
               Today
             </Button>
-            <Button variant="ghost" size="icon" onClick={() => navigateMonth('prev')}>
+            <Button variant="ghost" size="icon" onClick={() => navigateMonth('prev')} title="Previous Month (P)">
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="icon" onClick={() => navigateMonth('next')}>
+            <Button variant="ghost" size="icon" onClick={() => navigateMonth('next')} title="Next Month (N)">
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>
+        </div>
+        
+        {/* Keyboard shortcuts help */}
+        <div className="text-xs text-muted-foreground flex flex-wrap gap-4">
+          <span>Shortcuts:</span>
+          <span><kbd className="px-1 py-0.5 bg-muted rounded text-xs">T</kbd> Today</span>
+          <span><kbd className="px-1 py-0.5 bg-muted rounded text-xs">N</kbd> Next month</span>
+          <span><kbd className="px-1 py-0.5 bg-muted rounded text-xs">P</kbd> Previous month</span>
+          <span><kbd className="px-1 py-0.5 bg-muted rounded text-xs">D</kbd> Next day</span>
+          <span><kbd className="px-1 py-0.5 bg-muted rounded text-xs">Shift+D</kbd> Previous day</span>
         </div>
       </div>
 

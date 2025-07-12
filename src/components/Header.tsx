@@ -1,13 +1,16 @@
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Menu, Search, Settings } from "lucide-react";
+import { Menu, Search, Settings, Moon, Sun } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { useTheme } from "next-themes";
 
 interface HeaderProps {
   onToggleSidebar: () => void;
 }
 
 export const Header = ({ onToggleSidebar }: HeaderProps) => {
+  const { theme, setTheme } = useTheme();
+
   return (
     <header className="h-16 border-b border-border bg-background">
       <div className="flex items-center justify-between h-full px-4">
@@ -45,6 +48,14 @@ export const Header = ({ onToggleSidebar }: HeaderProps) => {
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon" className="md:hidden">
             <Search className="h-5 w-5" />
+          </Button>
+          
+          <Button 
+            variant="ghost" 
+            size="icon"
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+          >
+            {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
           </Button>
           
           <Button variant="ghost" size="icon">
