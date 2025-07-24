@@ -119,8 +119,8 @@ export const CalendarView = ({ tasks, onTaskClick, onDateClick }: CalendarViewPr
               <div
                 key={index}
                 className={cn(
-                  "border border-border rounded-lg p-2 min-h-[120px] bg-background transition-colors",
-                  "hover:bg-task-hover cursor-pointer",
+                  "border border-border rounded-lg p-2 min-h-[120px] bg-card transition-colors",
+                  "hover:bg-accent/50 cursor-pointer",
                   !isCurrentMonth && "opacity-50 bg-muted/30",
                   isDayToday && "bg-primary/5 border-primary/30"
                 )}
@@ -147,7 +147,7 @@ export const CalendarView = ({ tasks, onTaskClick, onDateClick }: CalendarViewPr
                       key={task.id}
                       className={cn(
                         "p-1 rounded text-xs cursor-pointer transition-colors",
-                        "hover:bg-background border border-transparent hover:border-border",
+                        "hover:bg-accent/30 border border-transparent hover:border-border",
                         task.completed && "opacity-60 line-through"
                       )}
                       onClick={(e) => {
