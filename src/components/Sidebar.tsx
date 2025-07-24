@@ -92,7 +92,7 @@ export const Sidebar = ({ isOpen, onToggle, onFilterChange, currentView, onViewC
       
       {/* Sidebar */}
       <div className={cn(
-        "fixed lg:static inset-y-0 left-0 z-50 w-80 bg-background border-r border-border transition-transform duration-200 ease-in-out lg:translate-x-0",
+        "fixed lg:static inset-y-0 left-0 z-50 w-80 bg-sidebar-background border-r border-sidebar-border transition-transform duration-300 ease-in-out lg:translate-x-0 shadow-lg lg:shadow-none",
         isOpen ? "translate-x-0" : "-translate-x-full"
       )}>
         <div className="flex flex-col h-full">
@@ -190,7 +190,7 @@ export const Sidebar = ({ isOpen, onToggle, onFilterChange, currentView, onViewC
                             )}
                             onClick={() => handleFilterClick({ priority: item.id as any })}
                           >
-                            <div className={cn("w-3 h-3 rounded-full", item.color)} />
+                            <item.icon className="h-4 w-4" />
                             {item.label}
                           </Button>
                         ))}
@@ -212,7 +212,7 @@ export const Sidebar = ({ isOpen, onToggle, onFilterChange, currentView, onViewC
                             )}
                             onClick={() => handleFilterClick({ category: item.id as any })}
                           >
-                            <div className={cn("w-3 h-3 rounded-full", item.color)} />
+                            <item.icon className="h-4 w-4" />
                             {item.label}
                           </Button>
                         ))}
@@ -233,39 +233,6 @@ export const Sidebar = ({ isOpen, onToggle, onFilterChange, currentView, onViewC
                 </Collapsible>
               </div>
 
-              <div className="pt-4 border-t border-border">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-muted-foreground">Lists</span>
-                </div>
-                
-                {taskLists.map((list) => (
-                  <Button
-                    key={list.id}
-                    variant="ghost"
-                    className={cn(
-                      "w-full justify-start gap-3 h-10",
-                      activeListId === list.id && "bg-accent text-accent-foreground"
-                    )}
-                    onClick={() => setActiveListId(list.id)}
-                  >
-                    <CheckSquare className="h-4 w-4" />
-                    {list.name}
-                    {list.taskCount > 0 && (
-                      <Badge variant="secondary" className="ml-auto">
-                        {list.taskCount}
-                      </Badge>
-                    )}
-                  </Button>
-                ))}
-                
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start gap-3 h-10 text-muted-foreground"
-                >
-                  <Plus className="h-4 w-4" />
-                  Create new list
-                </Button>
-              </div>
 
               {/* Settings */}
               <div className="pt-4 border-t border-border">
