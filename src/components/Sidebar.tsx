@@ -14,7 +14,8 @@ import {
   User,
   ShoppingCart,
   Circle,
-  Filter
+  Filter,
+  Settings
 } from "lucide-react";
 import {
   Collapsible,
@@ -36,6 +37,8 @@ interface SidebarProps {
   onFilterChange?: (filter: FilterOptions) => void;
   currentView?: "list" | "calendar";
   onViewChange?: (view: "list" | "calendar") => void;
+  onShowStarred?: () => void;
+  onOpenSettings?: () => void;
 }
 
 interface FilterOptions {
@@ -44,7 +47,7 @@ interface FilterOptions {
   showCompleted?: boolean;
 }
 
-export const Sidebar = ({ isOpen, onToggle, onFilterChange, currentView, onViewChange }: SidebarProps) => {
+export const Sidebar = ({ isOpen, onToggle, onFilterChange, currentView, onViewChange, onShowStarred, onOpenSettings }: SidebarProps) => {
   const [taskLists] = useState<TaskList[]>([
     { id: "1", name: "My Tasks", taskCount: 0, isDefault: true },
   ]);
@@ -118,7 +121,7 @@ export const Sidebar = ({ isOpen, onToggle, onFilterChange, currentView, onViewC
                   variant="ghost"
                   className={cn(
                     "w-full justify-start gap-3 h-10",
-                    activeListId === "1" && "bg-task-sidebar-active text-primary"
+                    activeListId === "1" && "bg-accent text-accent-foreground"
                   )}
                   onClick={() => setActiveListId("1")}
                 >
@@ -132,6 +135,7 @@ export const Sidebar = ({ isOpen, onToggle, onFilterChange, currentView, onViewC
                 <Button
                   variant="ghost"
                   className="w-full justify-start gap-3 h-10"
+                  onClick={onShowStarred}
                 >
                   <Star className="h-4 w-4" />
                   Starred
@@ -141,7 +145,7 @@ export const Sidebar = ({ isOpen, onToggle, onFilterChange, currentView, onViewC
                   variant="ghost"
                   className={cn(
                     "w-full justify-start gap-3 h-10",
-                    currentView === "calendar" && "bg-task-sidebar-active text-primary"
+                    currentView === "calendar" && "bg-accent text-accent-foreground"
                   )}
                   onClick={() => onViewChange?.("calendar")}
                 >
@@ -240,7 +244,7 @@ export const Sidebar = ({ isOpen, onToggle, onFilterChange, currentView, onViewC
                     variant="ghost"
                     className={cn(
                       "w-full justify-start gap-3 h-10",
-                      activeListId === list.id && "bg-task-sidebar-active text-primary"
+                      activeListId === list.id && "bg-accent text-accent-foreground"
                     )}
                     onClick={() => setActiveListId(list.id)}
                   >
@@ -260,6 +264,18 @@ export const Sidebar = ({ isOpen, onToggle, onFilterChange, currentView, onViewC
                 >
                   <Plus className="h-4 w-4" />
                   Create new list
+                </Button>
+              </div>
+
+              {/* Settings */}
+              <div className="pt-4 border-t border-border">
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start gap-3 h-10"
+                  onClick={onOpenSettings}
+                >
+                  <Settings className="h-4 w-4" />
+                  Settings
                 </Button>
               </div>
             </div>

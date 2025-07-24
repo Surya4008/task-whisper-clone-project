@@ -33,7 +33,8 @@ import {
   Flag,
   GripVertical,
   AlertCircle,
-  List
+  List,
+  Star
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -51,6 +52,8 @@ type ViewType = "list" | "calendar";
 interface TaskListProps {
   view?: ViewType;
   onViewChange?: (view: ViewType) => void;
+  showStarred?: boolean;
+  onStarredChange?: (starred: boolean) => void;
 }
 
 interface SortableTaskItemProps {
@@ -165,8 +168,13 @@ const SortableTaskItem = ({ task, onToggle, onEdit, onDelete, onOpenDetails }: S
           
           {/* Category Badge */}
           <Badge className={cn("category-badge text-xs", categoryColors[task.category])}>
-            {task.category}
+            {task.category === "custom" ? task.customCategory || "Custom" : task.category}
           </Badge>
+          
+          {/* Star indicator */}
+          {task.starred && (
+            <Star className="h-4 w-4 text-yellow-500 fill-current ml-2" />
+          )}
         </div>
       </div>
 
@@ -199,7 +207,7 @@ const SortableTaskItem = ({ task, onToggle, onEdit, onDelete, onOpenDetails }: S
   );
 };
 
-export const TaskList = ({ view = "list", onViewChange }: TaskListProps) => {
+export const TaskList = ({ view = "list", onViewChange, showStarred = false, onStarredChange }: TaskListProps) => {
   const [tasks, setTasks] = useState<TaskDetails[]>([]);
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [selectedTask, setSelectedTask] = useState<TaskDetails | null>(null);
@@ -216,15 +224,16 @@ export const TaskList = ({ view = "list", onViewChange }: TaskListProps) => {
 
   const addTask = () => {
     if (newTaskTitle.trim()) {
-      const newTask: TaskDetails = {
-        id: Date.now().toString(),
-        title: newTaskTitle.trim(),
-        description: "",
-        completed: false,
-        priority: "none",
-        category: "personal",
-        createdAt: new Date(),
-      };
+    const newTask: TaskDetails = {
+      id: Date.now().toString(),
+      title: newTaskTitle.trim(),
+      description: "",
+      completed: false,
+      priority: "none",
+      category: "personal",
+      starred: false,
+      createdAt: new Date(),
+    };
       setTasks([newTask, ...tasks]);
       setNewTaskTitle("");
     }
@@ -264,8 +273,9 @@ export const TaskList = ({ view = "list", onViewChange }: TaskListProps) => {
     }
   };
 
-  // Sort tasks: incomplete first, then by priority (high to low), then by due date
-  const sortedTasks = [...tasks].sort((a, b) => {
+  // Filter and sort tasks
+  const filteredTasks = showStarred ? tasks.filter(task => task.starred) : tasks;
+  const sortedTasks = [...filteredTasks].sort((a, b) => {
     if (a.completed !== b.completed) {
       return a.completed ? 1 : -1;
     }
@@ -299,7 +309,7 @@ export const TaskList = ({ view = "list", onViewChange }: TaskListProps) => {
       <div className="p-6 border-b border-border">
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-2xl font-medium text-foreground">
-            {view === "calendar" ? "Calendar" : "My Tasks"}
+            {view === "calendar" ? "Calendar" : showStarred ? "Starred Tasks" : "My Tasks"}
           </h1>
           
           {/* View Toggle */}

@@ -30,7 +30,7 @@ interface QuickTaskDialogProps {
 export const QuickTaskDialog = ({ isOpen, selectedDate, onClose, onSave }: QuickTaskDialogProps) => {
   const [title, setTitle] = useState("");
   const [priority, setPriority] = useState<"none" | "low" | "medium" | "high">("none");
-  const [category, setCategory] = useState<"work" | "personal" | "shopping" | "other">("personal");
+  const [category, setCategory] = useState<"work" | "personal" | "shopping" | "other" | "custom">("personal");
   const [dueTime, setDueTime] = useState("");
 
   const handleSave = () => {
@@ -43,6 +43,7 @@ export const QuickTaskDialog = ({ isOpen, selectedDate, onClose, onSave }: Quick
         priority,
         category,
         dueDate: selectedDate,
+        starred: false,
         createdAt: new Date(),
       };
       onSave(newTask);
@@ -171,6 +172,12 @@ export const QuickTaskDialog = ({ isOpen, selectedDate, onClose, onSave }: Quick
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 rounded-full bg-category-other" />
                       Other
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="custom">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-muted" />
+                      Custom
                     </div>
                   </SelectItem>
                 </SelectContent>

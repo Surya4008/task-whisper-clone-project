@@ -24,7 +24,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { CalendarIcon, Clock, Flag } from "lucide-react";
+import { CalendarIcon, Clock, Flag, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export interface TaskDetails {
@@ -33,10 +33,12 @@ export interface TaskDetails {
   description: string;
   completed: boolean;
   priority: "none" | "low" | "medium" | "high";
-  category: "work" | "personal" | "shopping" | "other";
+  category: "work" | "personal" | "shopping" | "other" | "custom";
+  customCategory?: string;
   dueDate?: Date;
   startTime?: string;
   endTime?: string;
+  starred: boolean;
   createdAt: Date;
 }
 
@@ -49,13 +51,16 @@ interface TaskDetailDialogProps {
 
 export const TaskDetailDialog = ({ task, isOpen, onClose, onSave }: TaskDetailDialogProps) => {
   const [editedTask, setEditedTask] = useState<TaskDetails | null>(null);
+  const [customCategory, setCustomCategory] = useState("");
 
   const handleOpen = (open: boolean) => {
     if (open && task) {
       setEditedTask({ ...task });
+      setCustomCategory(task.customCategory || "");
     } else {
       onClose();
       setEditedTask(null);
+      setCustomCategory("");
     }
   };
 
@@ -92,7 +97,23 @@ export const TaskDetailDialog = ({ task, isOpen, onClose, onSave }: TaskDetailDi
     <Dialog open={isOpen} onOpenChange={handleOpen}>
       <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Task Details</DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            <Calendar className="h-5 w-5" />
+            Task Details
+            {editedTask && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => updateField("starred", !editedTask.starred)}
+                className={cn(
+                  "ml-auto",
+                  editedTask.starred && "text-yellow-500"
+                )}
+              >
+                <Star className={cn("h-4 w-4", editedTask.starred && "fill-current")} />
+              </Button>
+            )}
+          </DialogTitle>
         </DialogHeader>
         
         <div className="space-y-6 py-4">
@@ -187,16 +208,37 @@ export const TaskDetailDialog = ({ task, isOpen, onClose, onSave }: TaskDetailDi
                       Shopping
                     </div>
                   </SelectItem>
-                  <SelectItem value="other">
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded-full bg-category-other" />
-                      Other
-                    </div>
-                  </SelectItem>
+                    <SelectItem value="other">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded-full bg-category-other" />
+                        Other
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="custom">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded-full bg-muted" />
+                        Custom
+                      </div>
+                    </SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
+
+          {editedTask?.category === "custom" && (
+            <div className="space-y-2">
+              <Label htmlFor="custom-category">Custom Category</Label>
+              <Input
+                id="custom-category"
+                value={customCategory}
+                onChange={(e) => {
+                  setCustomCategory(e.target.value);
+                  updateField("customCategory", e.target.value);
+                }}
+                placeholder="Enter custom category"
+              />
+            </div>
+          )}
 
           {/* Due Date */}
           <div className="space-y-2">
